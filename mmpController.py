@@ -92,6 +92,9 @@ class MMPStage:
     def zmoveTo(self,position):
         self.moveTo(3,position,3)
 
+    def zmoveDist(self,distance):
+        self.moveDist(3,distance,3)
+
     def scan(self, length, width, resolution,velocity = speed):
         init_x = - width/2
         init_y = length/2
@@ -136,5 +139,5 @@ if __name__ == '__main__':
     stage = MMPStage(driverPath)
     # stage.exit()
     # stage.moveDist('x',1,3)
-    stage.ms_scan(10,10,2,2)
+    #stage.ms_scan(10,10,2,2)
     stage.exit()

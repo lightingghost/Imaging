@@ -45,7 +45,7 @@ class VoltageOutput(Task):
 
 
 if __name__ == '__main__':
-    current_input = CurrentInput(b'cDAQ1Mod4/ai0')
+    current_input = CurrentInput(b'cDAQ1Mod4/ai1')
     voltage_output = VoltageOutput(b'cDAQ1Mod1/ao2')
     current_input.StartTask()
 
