@@ -13,13 +13,15 @@ def PIDCtrl(input_func, output_func, setpoint, dt):
     integral = 0
     while (True):
         measured_value = input_func()
+        while(measured_value <= 0.00001):
+            output_value
         error = setpoint - measured_value
         integral = integral + error * dt
         derivative = (error - previous_error) / dt
         output_value = Kp * error + Ki * integral + Kd * derivative
         output_func(output_value)
         previous_error = error
-        time.sleep(dt)
+        time.sleep(dt-0.002)
 
 if __name__=='__main__':
 
@@ -31,4 +33,14 @@ if __name__=='__main__':
     driverPath = 'C:\\Program Files\\Mad City Labs\\MicroDrive\\MicroDrive'
     stage = MMPStage(driverPath)
 
-    stablizer = Process(target = PIDCtrl, args = (current_input.getResult,))
+    # preset current
+    current = 0.01
+
+    # Process 1: PID Control
+    stabilizer = Process(target = PIDCtrl, args = (current_input.getResult, stage.zmoveTo, current, 0.005))
+
+    # Process 2: stage scanning
+    scan = Process(target = stage.ms_scan(), args = (10,10,2,2))
+
+    stabilizer.start()
+    scan.start()

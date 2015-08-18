@@ -89,7 +89,8 @@ class MMPStage:
         self.moveDist(axis, distance, velocity)
         return 0
 
-    def zmove
+    def zmoveTo(self,position):
+        self.moveTo(3,position,3)
 
     def scan(self, length, width, resolution,velocity = speed):
         init_x = - width/2
