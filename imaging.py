@@ -82,7 +82,7 @@ if __name__=='__main__':
                 stage.moveDist('x',resolution,3)
                 used_time = dist_ctrl(stage.zmoveDist, current_input.getResult, current)
                 time.sleep(1-used_time)
-            stage.zmoveTo(1.5)
+            stage.zmoveDist(-0.3)
 
     ms_scan(4,4,1)
 
