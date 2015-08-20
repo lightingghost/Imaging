@@ -139,5 +139,5 @@ if __name__ == '__main__':
     stage = MMPStage(driverPath)
     # stage.exit()
     # stage.moveDist('x',1,3)
-    #stage.ms_scan(10,10,2,2)
+    stage.ms_scan(10,10,2,2)
     stage.exit()

@@ -72,7 +72,7 @@ if __name__=='__main__':
         for scan in range(num_of_scans):
             pos = stage.getPosition()
             print(pos)
-            init_y = length / 2 + scan * resolution
+            init_y = length / 2 - scan * resolution
             stage.moveTo('x', init_x)
             stage.moveTo('y', init_y)
             dist_ctrl(stage.zmoveDist, current_input.getResult, current)
@@ -86,7 +86,7 @@ if __name__=='__main__':
 
     ms_scan(4,4,1)
 
-
+    stage.exit()
     # distance controller
     #stabilizer=threading.Thread(target = recur_dist_ctrl, args = (stage.zmoveDist, current_input.getResult, current))
     # scanner
