@@ -2,7 +2,7 @@ __author__ = 'lighting'
 
 from DAQ import *
 from mmpController import *
-import threading
+from msctrl import *
 
 
 def PIDCtrl(input_func, output_func, setpoint, dt):
@@ -36,10 +36,11 @@ def dist_ctrl(zmove_dist, current_reader, setpoint):
     if current > setpoint:
         zmove_dist(-0.2)
         current = current_reader()
+
     while(current < setpoint):
         zmove_dist(0.01)
         current = current_reader()
-        print(current)
+        #print(current)
     zmove_dist(0.02)
     zmove_dist(-0.02)
 
@@ -64,27 +65,38 @@ if __name__=='__main__':
 
     # preset current and initial position of stage
     current = 0.0001
-    stage.zmoveTo(1)
+    stage.moveTo(1,0)
+    stage.zmoveTo(0)
+
+    # preset MS Spec contact closure
+    ms_spec = MSSpec(b'cDAQ1Mod1/ao0')
 
     def ms_scan(length, width, resolution):
-        init_x = - width / 2
-        num_of_scans = int(length / resolution) + 1
+
+        start_pos = stage.getPosition()
+        init_x = start_pos[0]
+        num_of_scans = int(length / resolution)
+        num_of_points = int(width / resolution)
         for scan in range(num_of_scans):
-            pos = stage.getPosition()
-            print(pos)
-            init_y = length / 2 - scan * resolution
+            #move to start position
+            init_y = start_pos[1] - scan * resolution
             stage.moveTo('x', init_x)
             stage.moveTo('y', init_y)
+
+            print('Scan #' + str(scan))
+            #stabilize the plasma
             dist_ctrl(stage.zmoveDist, current_input.getResult, current)
             time.sleep(5)
-            num_of_points = int(width / resolution) + 1
+            #send 5V signal to MS Spec
+            ms_spec.start()
+            #scan
             for point in range(num_of_points):
                 stage.moveDist('x',resolution,3)
                 used_time = dist_ctrl(stage.zmoveDist, current_input.getResult, current)
-                time.sleep(1-used_time)
+                time.sleep(0.95-used_time)
             stage.zmoveDist(-0.3)
 
-    ms_scan(4,4,1)
+    ms_scan(9,9,0.150)
 
     stage.exit()
     # distance controller
