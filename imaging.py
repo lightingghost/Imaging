@@ -2,7 +2,7 @@ __author__ = 'lighting'
 
 from DAQ import *
 from mmpController import *
-import threading
+from msctrl import *
 
 
 def PIDCtrl(input_func, output_func, setpoint, dt):
@@ -33,13 +33,14 @@ def dist_ctrl(zmove_dist, current_reader, setpoint):
     start = time.clock()
     current = current_reader()
     # already touch
-    if current > setpoint:
+    if abs(current) > setpoint:
         zmove_dist(-0.2)
         current = current_reader()
-    while(current < setpoint):
+
+    while(abs(current) < setpoint):
         zmove_dist(0.01)
         current = current_reader()
-        print(current)
+        #print(current)
     zmove_dist(0.02)
     zmove_dist(-0.02)
 
@@ -49,6 +50,8 @@ def dist_ctrl(zmove_dist, current_reader, setpoint):
 def recur_dist_ctrl(zmove_dist, current_reader, setpoint):
     while True:
         dist_ctrl(zmove_dist, current_reader, setpoint)
+
+
 
 
 
@@ -64,29 +67,48 @@ if __name__=='__main__':
 
     # preset current and initial position of stage
     current = 0.0001
-    stage.zmoveTo(1)
+    stage.moveto(1,-5)
+    stage.moveto(2,-2)
+    stage.z_moveto(-2)
+
+    # preset MS Spec contact closure
+    ms_spec = MSSpec(b'cDAQ1Mod1/ao0')
 
     def ms_scan(length, width, resolution):
-        init_x = - width / 2
-        num_of_scans = int(length / resolution) + 1
-        for scan in range(num_of_scans):
-            pos = stage.getPosition()
-            print(pos)
-            init_y = length / 2 - scan * resolution
-            stage.moveTo('x', init_x)
-            stage.moveTo('y', init_y)
-            dist_ctrl(stage.zmoveDist, current_input.getResult, current)
-            time.sleep(5)
-            num_of_points = int(width / resolution) + 1
-            for point in range(num_of_points):
-                stage.moveDist('x',resolution,3)
-                used_time = dist_ctrl(stage.zmoveDist, current_input.getResult, current)
-                time.sleep(1-used_time)
-            stage.zmoveDist(-0.3)
 
-    ms_scan(4,4,1)
+        start_pos = stage.getPosition()
+        init_x = start_pos[0]
+        num_of_scans = int(length / resolution)
+        num_of_points = int(width / resolution)
+        for scan in range(num_of_scans):
+            #move to start position
+            init_y = start_pos[1] - scan * resolution
+            stage.moveto('x', init_x)
+            stage.moveto('y', init_y)
+
+            print('Scan #' + str(scan))
+            #stabilize the plasma
+            dist_ctrl(stage.z_movedist, current_input.getResult, current)
+            time.sleep(5)
+            #send 5V signal to MS Spec
+            ms_spec.start()
+            #scan
+            for point in range(num_of_points):
+                stage.movedist('x',resolution,3)
+                stab_time = 2
+                while(stab_time):
+                    used_time = dist_ctrl(stage.z_movedist, current_input.getResult, current)
+                    sleep_time = 1.2-used_time
+                    if (sleep_time > 0):
+                        time.sleep(sleep_time)
+                    stab_time -= 1
+            stage.z_movedist(-0.3)
+
+    ms_scan(7.2, 7.2 ,0.120)
 
     stage.exit()
+    current_input.StopTask()
+    ms_spec.StopTask()
     # distance controller
     #stabilizer=threading.Thread(target = recur_dist_ctrl, args = (stage.zmoveDist, current_input.getResult, current))
     # scanner

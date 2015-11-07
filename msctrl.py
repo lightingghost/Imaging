@@ -6,12 +6,12 @@ import time
 class MSSpec(VoltageOutput):
     def __init__(self,name):
         VoltageOutput.__init__(self,name)
-        self.voltOut(5)
+        self.voltOut(0.01)
 
     def start(self):
-        self.voltOut(0.01)
-        time.sleep(0.5)
         self.voltOut(5)
+        time.sleep(0.5)
+        self.voltOut(0.01)
 
 
 if __name__=='__main__':
