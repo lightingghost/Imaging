@@ -49,6 +49,32 @@ class MMPStage:
             maxVelocityThreeAxis.value,
             minVelocity.value
         )
+        
+    def reset(self):
+        status = c_char_p()
+        
+        self.mmpStage.MCL_MicroDriveResetEncoders(status,
+                                                  self.handle)
+        return status.value
+        
+    def reset_x(self):
+        status = c_char_p()
+        
+        self.mmpStage.MCL_MicroDriveResetXEncoders(status, self.handle)
+        return status.value
+ 
+     def reset_y(self):
+        status = c_char_p()
+        
+        self.mmpStage.MCL_MicroDriveResetYEncoders(status, self.handle)
+        return status.value
+
+    def reset_z(self):
+        status = c_char_p()
+        
+        self.mmpStage.MCL_MicroDriveResetZEncoders(status, self.handle)
+        return status.value       
+    
 
     # Move a specific axis of a specific distance at a specific velocity
     # axis: X=1, Y=2, Z=3
@@ -106,6 +132,15 @@ class MMPStage:
 
     def y_movedist(self, distance):
         self.movedist(2, distance, 3)
+
+    def x_pos(self):
+        return self.getPosition()[0]
+
+    def y_pos(self):
+        return self.getPosition()[1]
+
+    def z_pos(self):
+        return self.getPosition()[2]
 
     def scan(self, length, width, resolution,velocity = speed):
         init_x = - width/2

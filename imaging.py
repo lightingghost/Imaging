@@ -54,7 +54,6 @@ def recur_dist_ctrl(zmove_dist, current_reader, setpoint):
 
 
 
-
 if __name__=='__main__':
 
     # pre-start NI-DAQ current input
@@ -67,9 +66,9 @@ if __name__=='__main__':
 
     # preset current and initial position of stage
     current = 0.0001
-    stage.moveto(1,-5)
-    stage.moveto(2,-2)
-    stage.z_moveto(-2)
+    stage.x_moveto(5)
+    stage.y_moveto(-4)
+    stage.z_moveto(6)
 
     # preset MS Spec contact closure
     ms_spec = MSSpec(b'cDAQ1Mod1/ao0')
@@ -95,16 +94,16 @@ if __name__=='__main__':
             #scan
             for point in range(num_of_points):
                 stage.movedist('x',resolution,3)
-                stab_time = 2
+                stab_time = 1
                 while(stab_time):
                     used_time = dist_ctrl(stage.z_movedist, current_input.getResult, current)
-                    sleep_time = 1.2-used_time
+                    sleep_time = 1.000-used_time
                     if (sleep_time > 0):
                         time.sleep(sleep_time)
                     stab_time -= 1
             stage.z_movedist(-0.3)
 
-    ms_scan(7.2, 7.2 ,0.120)
+    ms_scan(6, 6 ,0.100)
 
     stage.exit()
     current_input.StopTask()
