@@ -50,30 +50,30 @@ class MMPStage:
             minVelocity.value
         )
         
-    def reset(self):
-        status = c_char_p()
+    # def reset(self):
+    #     status = c_char_p()
         
-        self.mmpStage.MCL_MicroDriveResetEncoders(status,
-                                                  self.handle)
-        return status.value
+    #     self.mmpStage.MCL_MicroDriveResetEncoders(status,
+    #                                               self.handle)
+    #     return status.value
         
-    def reset_x(self):
-        status = c_char_p()
+    # def reset_x(self):
+    #     status = c_char_p()
         
-        self.mmpStage.MCL_MicroDriveResetXEncoders(status, self.handle)
-        return status.value
+    #     self.mmpStage.MCL_MicroDriveResetXEncoders(status, self.handle)
+    #     return status.value
  
-     def reset_y(self):
-        status = c_char_p()
+    #  def reset_y(self):
+    #     status = c_char_p()
         
-        self.mmpStage.MCL_MicroDriveResetYEncoders(status, self.handle)
-        return status.value
+    #     self.mmpStage.MCL_MicroDriveResetYEncoders(status, self.handle)
+    #     return status.value
 
-    def reset_z(self):
-        status = c_char_p()
+    # def reset_z(self):
+    #     status = c_char_p()
         
-        self.mmpStage.MCL_MicroDriveResetZEncoders(status, self.handle)
-        return status.value       
+    #     self.mmpStage.MCL_MicroDriveResetZEncoders(status, self.handle)
+    #     return status.value       
     
 
     # Move a specific axis of a specific distance at a specific velocity
